@@ -358,6 +358,12 @@ import time
 # "new functionality beyond Noctis Skytower's work" ###########################
 def ghost_write(sometext):
     for event in keyboard_stream(sometext):
+                    
+        #print "wVk:", repr(event.union.ki.wVk), \
+        #      "wScan:", repr(event.union.ki.wScan), \
+        #      "dwFlags:", repr(event.union.ki.dwFlags)
+        #print "time:", repr(event.union.ki.time)
+        #print "dwExtraInfo:", repr(event.union.ki.dwExtraInfo)
         SendInput(event)
         #time.sleep(0.01)
 # "end of new functionality beyond Noctis Skytower's work" ####################

@@ -105,9 +105,11 @@ class PySter(object):
                             print "*" * 10
                             #print traceback.print_exc()
                             print "Syntax Error while trying to execute: {}".format(code)
-                            self.State.switch_to(self.State.LISTENING)
-                        except:
-                            pass
+                        except Exception as e:
+                            self.KeysPressed = ""
+                            print e.message
+                            
+                        self.State.switch_to(self.State.LISTENING)
                         self.KeysPressed = ""
                 elif event.Ascii:
                     if event.Ascii >= 32 and event.Ascii <= 126:

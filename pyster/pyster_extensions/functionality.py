@@ -1,5 +1,6 @@
 import hashlib as hl
 import pandas as pd
+from math import pi
 
 def HardCodedPassword(seed):
     """Returns a hardcoded password"""
@@ -60,14 +61,22 @@ def SendEmailToSelf(msg):
 
 se = SendEmailToSelf
 
-def GetStockQuote(symbol):
+def PriceOf(symbol):
     #TODO
-    return "$24.99"
+    return "$193.88"
 
-sq = GetStockQuote
+sq = PriceOf
 
 def CreateClass():
-    return "class ClassName(object):\n     \"\"\" Information about the class \"\"\"\n     def __init__():\n     \"\"\" Information about the class \"\"\"\n\n\n def __add__(self,obj):"
+    return """class ClassName(object):
+     \"\"\" Information about the class \"\"\"
+     def __init__():
+         \"\"\" Information about the class \"\"\"
+     def __add__(self,obj):
+         pass"""
+
+def newlines():
+    return """\n\n\n\n"""
     
 def nl(n):
     tmp = "\n".join([str(i+1) for i in range(n)])
@@ -85,7 +94,9 @@ site = "C:\\WinPython-32bit-2.7.8.2\\python-2.7.8\\Lib\\site-packages"
 
 def em(to=None):
     if to:
-        tmp = "+".join(to.split(" "))
+        tmp = "+".join(to.split(" ") + ["do","not","spam","please"])
         return "first.last{}@gmail.com".format(tmp)
     else:
         return "first.last@gmail.com"
+
+redditpass = "theresalwaysmoneyinthebananastand"
