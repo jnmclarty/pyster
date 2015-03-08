@@ -55,7 +55,7 @@ class PySter(object):
         self.LastRight = dt.datetime.now()
         
     def pressed_chars(self,event):
-        if self.Debug:
+        if self.Debug and (self.State != self.State.PRINTING):
 
             out = []
             out.append(str(event.KeyID))
@@ -101,22 +101,26 @@ class PySter(object):
                             self.State.switch_to(self.State.PRINTING)
                             self.NKeysToPrint = len(str(ans))
                             kb.ghost_write(bu + str(ans))
-                        except:
-                            print traceback.print_exc()
+                        except SyntaxError:
+                            print "*" * 10
+                            #print traceback.print_exc()
+                            print "Syntax Error while trying to execute: {}".format(code)
                             self.State.switch_to(self.State.LISTENING)
+                        except:
+                            pass
                         self.KeysPressed = ""
                 elif event.Ascii:
                     if event.Ascii >= 32 and event.Ascii <= 126:
                         self.KeysPressed += x
             elif self.State == self.State.PRINTING:
                 self.NKeysToPrint -= 1
-                if self.Debug:
-                    print "Printing" + str(self.NKeysToPrint)
+                #if self.Debug:
+                #    print "Printing" + str(self.NKeysToPrint)
                 if self.NKeysToPrint <= 0:
                     self.State.switch_to(self.State.LISTENING)
 
 if __name__ == '__main__':
-    MyPySter = PySter(debug=False)
+    MyPySter = PySter(debug=True)
     
     proc = pyHook.HookManager()
     proc.KeyDown = MyPySter.pressed_chars
