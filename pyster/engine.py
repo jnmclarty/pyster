@@ -43,12 +43,19 @@ from rrsm import StateMachine
 ###############################################################################
 from pyster_extensions import *
 
+
+def afunc(n):
+    for i in range(n):
+        x = "{}".format(i)
+        y = x * 2
+        
 class PySter(object):    
     def __init__(self,debug=False):
         self.KeysPressed = ""
         self.State = StateMachine(['LISTENING','CAPTURINGCODE','PRINTING'])
         self.Debug = debug
         self.LastRight = dt.datetime.now()
+        self.syntaxerror = True
     def right_double(self,event):
         if (dt.datetime.now() - self.LastRight) < dt.timedelta(seconds=1):
             print "Fire!"
@@ -65,6 +72,8 @@ class PySter(object):
             #out = [str(x) for x in (event.KeyID,event.ScanCode,event.Ascii,event.flags)]
             print "KeyID\tScanCode\tAscii\tflags"
             print "\t".join(out)
+            #afunc(10000)
+            
             
         if event.Ascii == kb.VK_BACK: #backspace
             self.KeysPressed = self.KeysPressed[:-1:]
@@ -95,19 +104,50 @@ class PySter(object):
                         if self.Debug:
                             print list(self.KeysPressed)
                             print "{" + code + "}"
-                        try:
-                            exec(code)
-                            bu = chr(kb.VK_BACK) * (len(self.KeysPressed) + 3)
-                            self.State.switch_to(self.State.PRINTING)
-                            self.NKeysToPrint = len(str(ans))
-                            kb.ghost_write(bu + str(ans))
-                        except:
-                            print traceback.print_exc()
+                        
+                        if self.syntaxerror:
+                            print "Sorry, there's a syntax error, can't do it."
                             self.State.switch_to(self.State.LISTENING)
+                        else:
+                            try:
+                                exec(self.code)
+                                bu = chr(kb.VK_BACK) * (len(self.KeysPressed) + 3)
+                                self.State.switch_to(self.State.PRINTING)
+                                self.NKeysToPrint = len(str(ans))
+                                kb.ghost_write(bu + str(ans))
+                            except:
+                                print traceback.print_exc()
+                                self.State.switch_to(self.State.LISTENING)
                         self.KeysPressed = ""
                 elif event.Ascii:
                     if event.Ascii >= 32 and event.Ascii <= 126:
                         self.KeysPressed += x
+                        try:
+                            if self.Debug:
+                                print len(self.KeysPressed)
+                                print self.KeysPressed
+                            self.code = "ans = " + str(self.KeysPressed)
+                            #print self.code.split(b'\0',1)
+                            #self.code = self.code.split(b'\0',1)[0]
+                            #print self.code
+                            self.syntaxerror = False
+                            compile(self.code,'','single')
+                            #self.typeerror = False
+                        except SyntaxError:
+                            print "Found a syntax error"
+                            self.syntaxerror = True
+                        except:
+                            pass
+                        #except TypeError:
+                        #    self.syntaxerror = False
+#                            print "Found a null byte? wut?"
+#                            print code.decode('utf8')
+#                            self.syntaxerror = False
+#                            self.typeerror = True
+                        #except:
+                            #self.syntaxerror = False
+                            #print traceback.print_exc()
+                            #self.State.switch_to(self.State.LISTENING)                            
             elif self.State == self.State.PRINTING:
                 self.NKeysToPrint -= 1
                 if self.Debug:
@@ -116,7 +156,7 @@ class PySter(object):
                     self.State.switch_to(self.State.LISTENING)
 
 if __name__ == '__main__':
-    MyPySter = PySter(debug=False)
+    MyPySter = PySter(debug=True)
     
     proc = pyHook.HookManager()
     proc.KeyDown = MyPySter.pressed_chars
