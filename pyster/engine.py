@@ -49,6 +49,7 @@ class PySter(object):
         self.State = StateMachine(['LISTENING','CAPTURINGCODE','PRINTING'])
         self.Debug = debug
         self.LastRight = dt.datetime.now()
+        self.OutMode = ">"
     def right_double(self,event):
         if (dt.datetime.now() - self.LastRight) < dt.timedelta(seconds=1):
             print "Fire!"
@@ -77,30 +78,51 @@ class PySter(object):
             if self.State == self.State.LISTENING:
                 if event.Ascii:
                     if event.Ascii >= 32 and event.Ascii <= 126:
-                        if x == '>':
+                        if x in ('>','o','e'):
                             self.KeysPressed += x
-                            if self.KeysPressed[-3:] == ">>>":
+                            if self.KeysPressed[-3:] in (">>>",">>o",">>e"):
                                 if self.Debug:
                                     print "Starting to capture"
                                 self.State.switch_to(self.State.CAPTURINGCODE)
+                                self.OutMode = self.KeysPressed[2]
                                 self.KeysPressed = ""
                         else:
                             self.KeysPressed = ""                            
             elif self.State == self.State.CAPTURINGCODE:
                 if event.flags == 1:
-                    if self.Debug:
-                        print type(event.ScanCode)
+                    #if self.Debug:
+                        #print type(event.ScanCode)
                     if event.ScanCode == 77: #up or down arrow
                         code = "ans = " + str(self.KeysPressed)
                         if self.Debug:
-                            print list(self.KeysPressed)
+                            #print list(self.KeysPressed)
                             print "{" + code + "}"
                         try:
                             exec(code)
                             bu = chr(kb.VK_BACK) * (len(self.KeysPressed) + 3)
                             self.State.switch_to(self.State.PRINTING)
-                            self.NKeysToPrint = len(str(ans))
-                            kb.ghost_write(bu + str(ans))
+                            
+                            if self.OutMode == ">":
+                                self.NKeysToPrint = len(str(ans))
+                                kb.ghost_write(bu + str(ans))
+                            elif self.OutMode == "o":
+                                #TODO: This mode needs much more work...
+                                if isinstance(ans,(str,int)):
+                                    ans = str(type(ans)) + ":" + str(ans)
+                                elif isinstance(ans,pd.DataFrame):
+                                    ans = str(type(ans)) + ":" + str(ans)
+                                else:
+                                    ans = repr(ans)
+                                self.NKeysToPrint = len(ans)
+                                kb.ghost_write(bu + ans)
+                            elif self.OutMode == "e":
+                                #TODO: This mode needs much more work...
+                                ans = p2e2(ans)
+                                self.NKeysToPrint = len(ans)
+                                kb.ghost_write(bu + ans)
+                            else:
+                                raise Exception("Bad Mode")
+                                    
                         except SyntaxError:
                             print "*" * 10
                             #print traceback.print_exc()
