@@ -108,7 +108,7 @@ class PySter(object):
                         except Exception as e:
                             self.KeysPressed = ""
                             print e.message
-                            
+                            raise
                         self.State.switch_to(self.State.LISTENING)
                         self.KeysPressed = ""
                 elif event.Ascii:

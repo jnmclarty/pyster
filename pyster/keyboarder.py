@@ -365,7 +365,7 @@ def ghost_write(sometext):
         #print "time:", repr(event.union.ki.time)
         #print "dwExtraInfo:", repr(event.union.ki.dwExtraInfo)
         SendInput(event)
-        #time.sleep(0.01)
+        #time.sleep(0.001)
 # "end of new functionality beyond Noctis Skytower's work" ####################
         
 def switch_program():

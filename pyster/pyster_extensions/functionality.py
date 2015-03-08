@@ -69,11 +69,11 @@ sq = PriceOf
 
 def CreateClass():
     return """class ClassName(object):
-     \"\"\" Information about the class \"\"\"
-     def __init__():
-         \"\"\" Information about the class \"\"\"
-     def __add__(self,obj):
-         pass"""
+    \"\"\" Information about the class \"\"\"
+    def __init__():
+       \"\"\" Information about the class \"\"\"
+    def __repr__(self):
+       return "'{}()'.format(self.__name__)"""
 
 def newlines():
     return """\n\n\n\n"""
@@ -82,14 +82,31 @@ def nl(n):
     tmp = "\n".join([str(i+1) for i in range(n)])
     return tmp
     
-df1 = pd.DataFrame({'one' : pd.Series(pd.np.random.randn(5),index=['a','b','c','d','e']),
-                    'two' : pd.Series(pd.np.random.randn(4),index=['a','b','c','d']),
-                    'three' : pd.Series(pd.np.random.randn(6),index=['a','b','c','d','e','f'])})
+df1 = pd.DataFrame({'one' : pd.Series(pd.np.random.randn(6),index=list('abcdef')),
+                    'two' : pd.Series(pd.np.random.randn(6),index=list('abcdef')),
+                    'three' : pd.Series(pd.np.random.randn(6),index=list('abcdef'))})
 
 df2 = pd.DataFrame({'animal' : ['cat'] * 3 + ['dog'] * 2 + ['bird'] * 4,
                     'weight' : [2.5,2.6,2.3] + [5.3,5.8] + [0.2,0.2,0.2,0.3],
                     'color' : ['white','black','brown'] + ['brown','black'] + ['black'] * 4})
-                    
+
+def p2e(df):
+    """One attempt to convert pandas DF to Excel"""
+    #lb = [0x28] + [0x25] * len(df.columns)
+    s = "\t".join([""] + list(df.columns)) + "\n\n"
+    for row in df.iteritems():
+        tmp = [str(v) for v in row[1].values]
+        s = "\t".join([str(row[0])] + tmp) + "\n\n"
+    return s
+
+import re
+
+def p2e2(df):
+    """Second attempt to convert pandas DF to Excel"""
+    tmp = str(df)
+    tmp = re.sub(' +','\t',tmp)
+    return tmp
+    
 site = "C:\\WinPython-32bit-2.7.8.2\\python-2.7.8\\Lib\\site-packages"
 
 def em(to=None):
