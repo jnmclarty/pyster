@@ -1,6 +1,7 @@
 import hashlib as hl
 import pandas as pd
 from math import pi
+import re
 
 def HardCodedPassword(seed):
     """Returns a hardcoded password"""
@@ -90,23 +91,22 @@ df2 = pd.DataFrame({'animal' : ['cat'] * 3 + ['dog'] * 2 + ['bird'] * 4,
                     'weight' : [2.5,2.6,2.3] + [5.3,5.8] + [0.2,0.2,0.2,0.3],
                     'color' : ['white','black','brown'] + ['brown','black'] + ['black'] * 4})
 
+
 def p2e(df):
-    """One attempt to convert pandas DF to Excel"""
+    """First attempt to convert pandas DF to Excel"""
+    tmp = str(df)
+    tmp = re.sub(' +','\t',tmp)
+    return tmp
+    
+def p2e2(df):
+    """Second attempt to convert pandas DF to Excel"""
     #lb = [0x28] + [0x25] * len(df.columns)
     s = "\t".join([""] + list(df.columns)) + "\n\n"
     for row in df.iteritems():
         tmp = [str(v) for v in row[1].values]
         s = "\t".join([str(row[0])] + tmp) + "\n\n"
     return s
-
-import re
-
-def p2e2(df):
-    """Second attempt to convert pandas DF to Excel"""
-    tmp = str(df)
-    tmp = re.sub(' +','\t',tmp)
-    return tmp
-    
+   
 site = "C:\\WinPython-32bit-2.7.8.2\\python-2.7.8\\Lib\\site-packages"
 
 def em(to=None):
