@@ -106,13 +106,16 @@ def p2e2(df):
         tmp = [str(v) for v in row[1].values]
         s = "\t".join([str(row[0])] + tmp) + "\n\n"
     return s
+
+J = "Jeffrey McLarty"
+TryNotToBlink = "I thought I told you not to blink?"
    
 site = "C:\\WinPython-32bit-2.7.8.2\\python-2.7.8\\Lib\\site-packages"
 
 def em(to=None):
     if to:
-        tmp = "+".join(to.split(" ") + ["do","not","spam","please"])
-        return "first.last{}@gmail.com".format(tmp)
+        tmp = "".join(to.split(" ") + ["do","not","spam","please"])
+        return "first.last+{}@gmail.com".format(tmp)
     else:
         return "first.last@gmail.com"
 
